@@ -30,10 +30,10 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// insert into DB
-	_, err = config.DB.Exec(
-    "INSERT INTO users (firstname, lastname, email, password, role, grade, school) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+	err = config.DB.QueryRow(
+    "INSERT INTO users (firstname, lastname, email, password, role, grade, school) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
     user.Firstname, user.Lastname, user.Email, string(hashedPasswords), user.Role, user.Grade, user.School,
-)
+).Scan(&user.ID)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
@@ -43,7 +43,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, http.StatusInternalServerError, "Error saving user: "+err.Error())
 		return
 	}
-	token,err:=utils.GenerateJWT(user.Email)
+	token,err:=utils.GenerateJWT(user.Firstname+" "+user.Lastname,user.Email,user.School,user.ID)
 	if(err!=nil){
 		jsonResponse(w, http.StatusInternalServerError,"Error generating token")
 	}
@@ -51,6 +51,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	    response := map[string]interface{}{
         "token": token,
         "user": map[string]interface{}{
+			"id":        user.ID,
             "firstname": user.Firstname,
             "lastname":  user.Lastname,
             "email":     user.Email,
@@ -71,10 +72,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&user)
 
 	var dbUser models.User
-	err := config.DB.QueryRow(
-    "SELECT firstname, lastname, email, role, password, grade, school FROM users WHERE email=$1",
+err := config.DB.QueryRow(
+    "SELECT id, firstname, lastname, email, role, password, grade, school FROM users WHERE email=$1",
     user.Email,
-).Scan(&dbUser.Firstname, &dbUser.Lastname, &dbUser.Email, &dbUser.Role, &dbUser.Password, &dbUser.Grade, &dbUser.School)
+).Scan(&dbUser.ID, &dbUser.Firstname, &dbUser.Lastname, &dbUser.Email, &dbUser.Role, &dbUser.Password, &dbUser.Grade, &dbUser.School)
 
 	if err != nil {
 		jsonResponse(w, http.StatusUnauthorized, "Invalid email or user not found")
@@ -88,7 +89,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate JWT
-	token, err := utils.GenerateJWT(dbUser.Firstname + " " + dbUser.Lastname + " " + dbUser.Role)
+	token, err := utils.GenerateJWT(dbUser.Firstname+" "+dbUser.Lastname,dbUser.Email,dbUser.School,dbUser.ID)
 	if err != nil {
 		jsonResponse(w, http.StatusInternalServerError, "Error generating token")
 		return
@@ -98,6 +99,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
     "token": token,
     "user": map[string]interface{}{
+			"id":        dbUser.ID,
         "firstname": dbUser.Firstname,
         "lastname":  dbUser.Lastname,
         "email":     dbUser.Email,

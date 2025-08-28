@@ -9,5 +9,5 @@ func RegisterRoutes(r *mux.Router){
 r.HandleFunc("/login", controllers.Login).Methods("POST")
 r.HandleFunc("/assignments",controllers.CreateAssignment).Methods("POST")
 r.HandleFunc("/submission",controllers.SubmissionAssignment).Methods("POST")
-
+r.HandleFunc("/fetchAssignment",controllers.FetchAssignments).Methods("GET")
 }

@@ -6,4 +6,6 @@ type Assignment struct{
 	Description string `json:"description"`
 	DueDate time.Time `json:"due_date"`
 	Teacher_ID int `json:"teacher_id"`
+	School string `json:"school"`
+	Subject string `json:"subject"`
 }
