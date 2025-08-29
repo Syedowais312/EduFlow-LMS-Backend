@@ -2,13 +2,21 @@ package main
 import(
 	"fmt"
 	"log"
+	"os"
 	"net/http"
 	"github.com/gorilla/mux"
 	"goeduflow/config"
 	"goeduflow/routes"
 	"github.com/rs/cors"
+	"github.com/joho/godotenv"
 )
 func main(){
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	connStr := os.Getenv("SUPABASE_URL")
+	fmt.Println("Supabase Connection:", connStr)
 	// Connect to database
 	config.ConnecttoDB()
 	

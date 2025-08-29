@@ -4,16 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
+
 )
 
 var DB *sql.DB
 
 func ConnecttoDB() {
-	connStr := "postgresql://postgres:Owais@786@db.fxqrwbrbumhjlqowglcx.supabase.co:5432/postgres"
+	
 	var err error
-	DB, err = sql.Open("postgres", connStr)
+	DB, err = sql.Open("postgres", os.Getenv("SUPABASE_URL"))
 	if err != nil {
 		log.Fatal("Failed to open database connection:", err)
 	}
