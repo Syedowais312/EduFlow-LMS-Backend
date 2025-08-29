@@ -30,7 +30,7 @@ func main(){
 	}).Methods("GET")
 
 	c:=cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedOrigins: []string{os.Getenv("EduFlow_API")},
 		AllowedMethods: []string{"GET","POST","PUT","DELETE"},
 		AllowedHeaders: []string{"Authorization","Content-Type"},
 		AllowCredentials: true,
