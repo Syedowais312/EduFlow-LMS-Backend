@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"goeduflow/config"
-	"goeduflow/middleware"
+	//"goeduflow/middleware"
 	"goeduflow/models"
 )
 
@@ -43,17 +43,14 @@ func CreateAssignment(w http.ResponseWriter, r *http.Request) {
 // FetchAssignments handler
 func FetchAssignments(w http.ResponseWriter, r *http.Request) {
 	// Get school name from middleware context
-	school, ok := r.Context().Value(authmiddleware.SchoolKey).(string)
-	if !ok || school == "" {
-		jsonError(w, http.StatusUnauthorized, "School not found in token")
-		return
-	}
+	//school, ok := r.Context().Value(authmiddleware.SchoolKey).(string)
+	//school:="Dayanda sagar college"
+	
 
 	rows, err := config.DB.Query(`
 		SELECT id, title, description, due_date, subject, school
 		FROM assignments 
-		WHERE school=$1`,
-		school,
+		`,
 	)
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())

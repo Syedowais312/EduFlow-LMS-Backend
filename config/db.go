@@ -11,7 +11,7 @@ import (
 var DB *sql.DB
 
 func ConnecttoDB() {
-	connStr := "user=postgres password=Owais@786 dbname=go_backend sslmode=disable"
+	connStr := "postgresql://postgres:Owais@786@db.fxqrwbrbumhjlqowglcx.supabase.co:5432/postgres"
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
