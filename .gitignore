@@ -22,9 +22,7 @@ go.work.sum
 /vendor/
 
 # Environment & config files
-.env
-.env.*
-*.env
+
 *.local
 config.yaml
 config.local.yaml
